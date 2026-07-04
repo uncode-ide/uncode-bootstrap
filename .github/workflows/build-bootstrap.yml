@@ -26,17 +26,6 @@ jobs:
           git clone --depth=1 https://github.com/termux/termux-packages.git
           echo "✓ Cloned termux-packages"
 
-      - name: Patch package name to com.uncode
-        run: |
-          cd termux-packages
-          sed -i 's/TERMUX_APP__PACKAGE_NAME="com.termux"/TERMUX_APP__PACKAGE_NAME="com.uncode"/' scripts/properties.sh
-          grep 'TERMUX_APP__PACKAGE_NAME=' scripts/properties.sh | head -1
-          echo "✓ Package name patched to com.uncode"
-
-          # Bypass prefix guard so deps download from official repo
-          sed -i 's|if \[ "\$TERMUX_REPO_APP__PACKAGE_NAME" != "\$TERMUX_APP_PACKAGE" \]|if false|' scripts/build/termux_download_deb_pac.sh
-          echo "✓ Bypassed prefix guard"
-
       - name: Build vanilla bootstrap
         run: |
           cd termux-packages
