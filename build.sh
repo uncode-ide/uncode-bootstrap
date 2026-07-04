@@ -99,6 +99,17 @@ else
     echo "  ⚠ dpkg status file not found"
 fi
 
+# ── step 3.5: rewrite ELF binaries and scripts ──────────────────────────
+
+echo ""
+echo "→ Rewriting ELF binaries and text scripts (${OLD_PREFIX} → ${NEW_PREFIX})..."
+find "$ROOTFS/bin" "$ROOTFS/lib" "$ROOTFS/libexec" "$ROOTFS/var" "$ROOTFS/etc" -type f \
+    ! -name "libc++_shared.so" \
+    ! -name "ld-musl-*" \
+    ! -name "libc.musl-*" \
+    -print0 2>/dev/null | xargs -0 -r perl -pi -e "s|/data/data/${OLD_PKG}/|/data/data/${NEW_PKG}/|g" || true
+echo "  ✓ Binaries and scripts patched"
+
 # ── step 4: re-zip ──────────────────────────────────────────────────────
 
 echo ""
