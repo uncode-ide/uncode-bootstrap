@@ -107,6 +107,10 @@ find "$ROOTFS/bin" "$ROOTFS/lib" "$ROOTFS/libexec" "$ROOTFS/var" "$ROOTFS/etc" -
     ! -name "libc++_shared.so" \
     ! -name "ld-musl-*" \
     ! -name "libc.musl-*" \
+    ! -name "*.gpg" \
+    ! -name "*.tar.*" \
+    ! -name "*.zip" \
+    ! -name "*.gz" \
     -print0 2>/dev/null | xargs -0 -r perl -pi -e "s|/data/data/${OLD_PKG}/|/data/data/${NEW_PKG}/|g" || true
 echo "  ✓ Binaries and scripts patched"
 
