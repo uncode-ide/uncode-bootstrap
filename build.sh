@@ -104,9 +104,6 @@ fi
 echo ""
 echo "→ Rewriting ELF binaries and text scripts (${OLD_PREFIX} → ${NEW_PREFIX})..."
 find "$ROOTFS/bin" "$ROOTFS/lib" "$ROOTFS/libexec" "$ROOTFS/var" "$ROOTFS/etc" -type f \
-    ! -name "libc++_shared.so" \
-    ! -name "ld-musl-*" \
-    ! -name "libc.musl-*" \
     ! -name "*.gpg" \
     ! -name "*.tar.*" \
     ! -name "*.zip" \
