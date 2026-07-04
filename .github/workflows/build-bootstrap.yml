@@ -10,6 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout uncode-bootstrap
@@ -55,9 +57,11 @@ jobs:
           path: dist/uncode-bootstrap-aarch64.zip
           retention-days: 90
 
-      - name: Create release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Update Latest Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: latest
+          name: "Latest Bootstrap Build"
           files: dist/uncode-bootstrap-aarch64.zip
-          generate_release_notes: true
+          prerelease: true
+          make_latest: true
