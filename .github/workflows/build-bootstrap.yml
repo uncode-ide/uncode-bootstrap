@@ -29,7 +29,7 @@ jobs:
       - name: Build vanilla bootstrap
         run: |
           cd termux-packages
-          ./scripts/run-docker.sh ./scripts/generate-bootstraps.sh --architectures aarch64
+          ./scripts/generate-bootstraps.sh --architectures aarch64
           echo "✓ Vanilla bootstrap built"
           ls -lh bootstrap-archives/ 2>/dev/null || echo "checking output dir..."
           find . -name 'bootstrap-*.zip' -ls 2>/dev/null
