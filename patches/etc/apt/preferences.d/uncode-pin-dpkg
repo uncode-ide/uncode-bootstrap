@@ -1,0 +1,19 @@
+Package: dpkg dpkg-dev
+Pin: release *
+Pin-Priority: 1001
+
+Package: apt
+Pin: release *
+Pin-Priority: 1001
+
+Package: termux-exec
+Pin: release *
+Pin-Priority: 1001
+
+Package: termux-tools
+Pin: release *
+Pin-Priority: 1001
+
+Package: termux-keyring
+Pin: release *
+Pin-Priority: 1001

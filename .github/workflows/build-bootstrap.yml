@@ -1,0 +1,74 @@
+name: Build Bootstrap
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout uncode-bootstrap
+        uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/powershell /usr/share/swift
+          sudo apt-get clean
+          df -h /
+
+      - name: Clone termux-packages
+        run: |
+          git clone --depth=1 https://github.com/termux/termux-packages.git
+          echo "✓ Cloned termux-packages"
+
+      - name: Patch package name to com.uncode
+        run: |
+          cd termux-packages
+          sed -i 's/TERMUX_APP__PACKAGE_NAME="com.termux"/TERMUX_APP__PACKAGE_NAME="com.uncode"/' scripts/properties.sh
+          grep 'TERMUX_APP__PACKAGE_NAME=' scripts/properties.sh | head -1
+          echo "✓ Package name patched to com.uncode"
+
+          # Bypass prefix guard so deps download from official repo
+          sed -i 's|if \[ "\$TERMUX_REPO_APP__PACKAGE_NAME" != "\$TERMUX_APP_PACKAGE" \]|if false|' scripts/build/termux_download_deb_pac.sh
+          echo "✓ Bypassed prefix guard"
+
+      - name: Build vanilla bootstrap
+        run: |
+          cd termux-packages
+          ./scripts/run-docker.sh ./scripts/build-bootstraps.sh --architectures aarch64
+          echo "✓ Vanilla bootstrap built"
+          ls -lh bootstrap-archives/ 2>/dev/null || echo "checking output dir..."
+          find . -name 'bootstrap-*.zip' -ls 2>/dev/null
+
+      - name: Apply uncode patches
+        run: |
+          VANILLA_ZIP=$(find termux-packages -name 'bootstrap-aarch64.zip' -type f | head -1)
+          if [ -z "$VANILLA_ZIP" ]; then
+            echo "ERROR: No vanilla bootstrap zip found"
+            find termux-packages -name '*.zip' -ls 2>/dev/null
+            exit 1
+          fi
+          echo "Found vanilla zip: $VANILLA_ZIP ($(du -h $VANILLA_ZIP | cut -f1))"
+          mkdir -p dist
+          bash build.sh "$VANILLA_ZIP" dist/uncode-bootstrap-aarch64.zip
+          echo "✓ Patches applied"
+          ls -lh dist/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: uncode-bootstrap-aarch64
+          path: dist/uncode-bootstrap-aarch64.zip
+          retention-days: 90
+
+      - name: Create release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/uncode-bootstrap-aarch64.zip
+          generate_release_notes: true

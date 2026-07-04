@@ -1,0 +1,4 @@
+termux-packages/
+dist/
+*.zip
+/tmp/
