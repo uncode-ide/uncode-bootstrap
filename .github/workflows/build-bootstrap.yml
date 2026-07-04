@@ -63,5 +63,5 @@ jobs:
           tag_name: latest
           name: "Latest Bootstrap Build"
           files: dist/uncode-bootstrap-aarch64.zip
-          prerelease: true
+          prerelease: false
           make_latest: true
