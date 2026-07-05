@@ -111,6 +111,21 @@ find "$ROOTFS/bin" "$ROOTFS/lib" "$ROOTFS/libexec" "$ROOTFS/share" "$ROOTFS/var"
     -print0 2>/dev/null | xargs -0 -r perl -pi -e "s|/data/data/${OLD_PKG}/|/data/data/${NEW_PKG}/|g" || true
 echo "  ✓ Binaries and scripts patched"
 
+# ── step 3.6: rewrite symlink targets ────────────────────────────────────
+
+echo ""
+echo "→ Rewriting symlink targets (${OLD_PREFIX} → ${NEW_PREFIX})..."
+symlink_count=0
+while IFS= read -r -d '' link; do
+    target="$(readlink "$link")"
+    new_target="${target//$OLD_PREFIX/$NEW_PREFIX}"
+    if [[ "$target" != "$new_target" ]]; then
+        ln -sfn "$new_target" "$link"
+        symlink_count=$((symlink_count + 1))
+    fi
+done < <(find "$ROOTFS" -type l -print0 2>/dev/null)
+echo "  ✓ Rewrote $symlink_count symlink targets"
+
 # ── step 4: re-zip ──────────────────────────────────────────────────────
 
 echo ""
