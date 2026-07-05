@@ -57,6 +57,8 @@ echo ""
 echo "→ Copying patch overlay..."
 if [[ -d "$SCRIPT_DIR/patches" ]]; then
     cp -a "$SCRIPT_DIR/patches/." "$ROOTFS/"
+    # Ensure hook scripts are executable (ZIP/bootstrap don't preserve perms for etc/)
+    find "$ROOTFS/etc/apt" -name "*.sh" -exec chmod 0755 {} + 2>/dev/null || true
     echo "  ✓ Patches applied"
 else
     echo "  ⚠ No patches/ directory found, skipping overlay"

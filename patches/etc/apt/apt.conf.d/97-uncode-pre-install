@@ -1,3 +1,3 @@
 DPkg::Pre-Install-Pkgs {
-    "/data/data/com.uncode/files/usr/etc/apt/uncode-pre-install-rewrite.sh";
+    "bash /data/data/com.uncode/files/usr/etc/apt/uncode-pre-install-rewrite.sh";
 };
