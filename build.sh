@@ -111,20 +111,19 @@ find "$ROOTFS/bin" "$ROOTFS/lib" "$ROOTFS/libexec" "$ROOTFS/share" "$ROOTFS/var"
     -print0 2>/dev/null | xargs -0 -r perl -pi -e "s|/data/data/${OLD_PKG}/|/data/data/${NEW_PKG}/|g" || true
 echo "  ✓ Binaries and scripts patched"
 
-# ── step 3.6: rewrite symlink targets ────────────────────────────────────
+# ── step 3.6: rewrite SYMLINKS.txt ───────────────────────────────────────
+# Termux bootstrap ZIPs don't store real symlinks — they store symlink
+# definitions in SYMLINKS.txt (format: target←link).  The app recreates
+# them at first boot.  We must patch the targets here.
 
 echo ""
-echo "→ Rewriting symlink targets (${OLD_PREFIX} → ${NEW_PREFIX})..."
-symlink_count=0
-while IFS= read -r -d '' link; do
-    target="$(readlink "$link")"
-    new_target="${target//$OLD_PREFIX/$NEW_PREFIX}"
-    if [[ "$target" != "$new_target" ]]; then
-        ln -sfn "$new_target" "$link"
-        symlink_count=$((symlink_count + 1))
-    fi
-done < <(find "$ROOTFS" -type l -print0 2>/dev/null)
-echo "  ✓ Rewrote $symlink_count symlink targets"
+echo "→ Rewriting SYMLINKS.txt (${OLD_PREFIX} → ${NEW_PREFIX})..."
+if [[ -f "$ROOTFS/SYMLINKS.txt" ]]; then
+    sed -i "s|${OLD_PREFIX}|${NEW_PREFIX}|g" "$ROOTFS/SYMLINKS.txt"
+    echo "  ✓ SYMLINKS.txt patched"
+else
+    echo "  ⚠ SYMLINKS.txt not found, skipping"
+fi
 
 # ── step 4: re-zip ──────────────────────────────────────────────────────
 

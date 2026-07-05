@@ -1,5 +1,6 @@
-termux-packages/
-dist/
+*.jpg
 *.zip
 /tmp/
 Screenshot_2026-07-05-10-49-47-66_0bb4f7d5c54b987e124d370cef9259be.jpg
+dist/
+termux-packages/

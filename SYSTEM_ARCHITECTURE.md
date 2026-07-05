@@ -61,7 +61,7 @@ This document provides a deep-dive technical explanation of how **Uncode IDE** (
 3. Overlays the static [patches/](patches/) directory.
 4. Rewrites dpkg metadata files (`var/lib/dpkg/info/*.{postinst,postrm,...}` and `var/lib/dpkg/status`) using `sed` to replace `/data/data/com.termux/` → `/data/data/com.uncode/`.
 5. Byte-patches ALL files in `bin/`, `lib/`, `libexec/`, `share/`, `var/`, `etc/` using `perl -pi -e` to replace `com.termux` → `com.uncode` in both text and binary content. This is offset-safe because both strings are exactly 10 bytes.
-6. Rewrites all **symlink targets** that contain `com.termux` paths. This is critical because symlinks (e.g., GPG keyring files in `etc/apt/trusted.gpg.d/` → `share/termux-keyring/`) store their target as filesystem metadata, not file content, so `perl`/`sed` cannot modify them.
+6. Patches `SYMLINKS.txt` — the bootstrap ZIP doesn't store real filesystem symlinks; instead it stores symlink definitions in `SYMLINKS.txt` (format: `target←link`). The Termux app reads this file at first boot to recreate symlinks. Targets like `/data/data/com.termux/files/usr/share/termux-keyring/termux-autobuilds.gpg` are rewritten to `com.uncode`. This is critical for GPG keyring symlinks (`etc/apt/trusted.gpg.d/*.gpg` → `share/termux-keyring/*.gpg`) — without this, `apt update` fails with `NO_PUBKEY`.
 7. Re-zips the result with symlink preservation.
 
 ---
