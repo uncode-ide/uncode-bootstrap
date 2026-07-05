@@ -27,8 +27,8 @@ This makes byte-level patching of ELF binaries safe — no offsets shift, no sec
 
 ### Prerequisites
 
-- A vanilla Termux bootstrap zip built with `TERMUX_APP__PACKAGE_NAME=com.uncode`
-- `zip`, `unzip`, `sed`, `bash`
+- A vanilla Termux bootstrap zip (standard `com.termux` build — `build.sh` handles the conversion)
+- `zip`, `unzip`, `sed`, `perl`, `bash`
 
 ### Producing the vanilla bootstrap
 
@@ -36,15 +36,13 @@ This makes byte-level patching of ELF binaries safe — no offsets shift, no sec
 git clone --depth=1 https://github.com/termux/termux-packages.git
 cd termux-packages
 
-# Patch the package name
-sed -i 's/TERMUX_APP__PACKAGE_NAME="com.termux"/TERMUX_APP__PACKAGE_NAME="com.uncode"/' \
-    scripts/properties.sh
-
-# Build (requires Docker)
+# Build with default com.termux package name (requires Docker)
 ./scripts/run-docker.sh ./scripts/build-bootstraps.sh --architectures aarch64
 ```
 
-This produces `bootstrap-archives/bootstrap-aarch64.zip`.
+This produces `bootstrap-archives/bootstrap-aarch64.zip` with standard `com.termux` paths.
+`build.sh` will byte-patch all occurrences to `com.uncode` — this is safe because both
+names are exactly 10 bytes, so no binary offsets shift.
 
 ### Applying Uncode patches
 
@@ -72,10 +70,9 @@ Releases ship a single artifact:
 The included [GitHub Actions workflow](.github/workflows/build-bootstrap.yml) automates the full pipeline:
 
 1. Clones `termux-packages`.
-2. Patches the package name to `com.uncode`.
-3. Builds the vanilla bootstrap inside Docker.
-4. Applies Uncode patches via `build.sh`.
-5. Uploads the artifact and (on tag push) creates a GitHub release.
+2. Builds the vanilla bootstrap (with default `com.termux` prefix) inside Docker.
+3. Applies Uncode patches via `build.sh` (byte-patches `com.termux` → `com.uncode`).
+4. Uploads the artifact and creates a GitHub release.
 
 ## Patch inventory
 

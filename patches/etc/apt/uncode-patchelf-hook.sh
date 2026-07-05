@@ -3,7 +3,7 @@
 PREFIX=/data/data/com.uncode/files/usr
 OLD_ID=com.termux
 NEW_ID=com.uncode
-MARKER=/tmp/.uncode-last-install
+MARKER="$PREFIX/tmp/.uncode-last-install"
 
 # Create marker if it doesn't exist
 [ ! -f "$MARKER" ] && touch -d '1 hour ago' "$MARKER"

@@ -103,7 +103,7 @@ fi
 
 echo ""
 echo "→ Rewriting ELF binaries and text scripts (${OLD_PREFIX} → ${NEW_PREFIX})..."
-find "$ROOTFS/bin" "$ROOTFS/lib" "$ROOTFS/libexec" "$ROOTFS/var" "$ROOTFS/etc" -type f \
+find "$ROOTFS/bin" "$ROOTFS/lib" "$ROOTFS/libexec" "$ROOTFS/share" "$ROOTFS/var" "$ROOTFS/etc" -type f \
     ! -name "*.gpg" \
     ! -name "*.tar.*" \
     ! -name "*.zip" \

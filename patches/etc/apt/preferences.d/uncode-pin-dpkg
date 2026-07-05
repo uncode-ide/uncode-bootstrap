@@ -1,19 +1,18 @@
+# Prevent auto-upgrade of dpkg: the bootstrap ships a version with
+# paths already patched to com.uncode.  Upgrading could break the
+# extraction pipeline.  Priority 1 (< installed 100) stops apt-upgrade
+# but still allows dependency-driven installs if absolutely needed.
 Package: dpkg dpkg-dev
 Pin: release *
-Pin-Priority: 1001
+Pin-Priority: 1
 
-Package: apt
-Pin: release *
-Pin-Priority: 1001
-
+# termux-exec provides libtermux-exec.so which intercepts exec() calls
+# to translate paths.  Upstream version uses com.termux paths.
 Package: termux-exec
 Pin: release *
-Pin-Priority: 1001
+Pin-Priority: 1
 
+# termux-tools provides pkg and other scripts with hardcoded prefix paths.
 Package: termux-tools
 Pin: release *
-Pin-Priority: 1001
-
-Package: termux-keyring
-Pin: release *
-Pin-Priority: 1001
+Pin-Priority: 1
