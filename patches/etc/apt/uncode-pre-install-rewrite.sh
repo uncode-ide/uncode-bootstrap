@@ -23,11 +23,17 @@ while IFS= read -r line; do
         printf '%s\n' "$matches" | while IFS= read -r f; do
             sed -i "s|/data/data/${OLD_PKG}/|/data/data/${NEW_PKG}/|g" "$f" 2>/dev/null || true
         done
-        for s in preinst postinst prerm postrm; do
-            [ -f "$WORK/DEBIAN/$s" ] && chmod 0755 "$WORK/DEBIAN/$s" 2>/dev/null
-        done
-        dpkg-deb -b "$WORK" "$deb_path" >/dev/null 2>&1 || true
     fi
+    
+    # Rename the root directory structure inside the .deb
+    if [ -d "$WORK/data/data/${OLD_PKG}" ]; then
+        mv "$WORK/data/data/${OLD_PKG}" "$WORK/data/data/${NEW_PKG}"
+    fi
+
+    for s in preinst postinst prerm postrm; do
+        [ -f "$WORK/DEBIAN/$s" ] && chmod 0755 "$WORK/DEBIAN/$s" 2>/dev/null
+    done
+    dpkg-deb -b "$WORK" "$deb_path" >/dev/null 2>&1 || true
     
     rm -rf "$WORK"
 done
